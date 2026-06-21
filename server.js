@@ -5,7 +5,7 @@ import cors from 'cors';
 const app = express();
 app.use(cors());
 
-// Increase the payload limit to handle high-res photos safely
+// Handle large image payloads safely
 app.use(express.json({ limit: '50mb' }));
 
 // Initialize the Gemini API client
@@ -32,8 +32,14 @@ app.post('/api/solve', async (req, res) => {
         // Run the AI task asynchronously in the background
         (async () => {
             try {
-                // Strip out the data header if the mobile app includes it
-                const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, "");
+                // 1. Remove the data URL prefix if it exists
+                let cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, "");
+
+                // 2. Clear out hidden newlines (\n), carriage returns (\r), spaces, and accidental backslashes
+                cleanBase64 = cleanBase64.replace(/\\n/g, "")
+                                         .replace(/\\r/g, "")
+                                         .replace(/[\r\n\s]/g, "")
+                                         .replace(/\\/g, "");
 
                 const prompt = `You are an expert tutor specializing in JEE Advanced and Main preparation for ${subject || 'Physics'}. Solve this step-by-step with clear formulas and explanations.`;
 
@@ -58,11 +64,10 @@ app.post('/api/solve', async (req, res) => {
 
             } catch (aiError) {
                 console.error("Gemini Error:", aiError);
-                // We mark it completed but pass the error text so your phone prints it out
                 jobs.set(jobId, {
                     id: jobId,
                     status: "completed",
-                    result: { solution: `⚠️ API Error: ${aiError.message}\n\nPlease check if GEMINI_API_KEY is correctly set in your Render Environment settings.` }
+                    result: { solution: `⚠️ API Error: ${aiError.message}` }
                 });
             }
         })();
@@ -95,5 +100,5 @@ app.get('/api/status/:id', (req, res) => {
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
-    console.log(`Server running perfectly on port ${PORT}`);
+    console.log(`Server scrubbing active on port ${PORT}`);
 });
