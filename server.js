@@ -41,19 +41,25 @@ app.post('/api/solve', async (req, res) => {
                                          .replace(/[\r\n\s]/g, "")
                                          .replace(/\\/g, "");
 
-                // Powerful new prompt instructing the AI to use textbook styling 
-                const prompt = `You are an expert tutor specializing in JEE Advanced and Main preparation for ${subject || 'Physics'}. 
-                Provide a beautifully clear, clean, step-by-step numerical solution for the problem in this image.
+                // Master Prompt engineered for maximum accuracy, diagrams, and absolute zero asterisks
+                const prompt = `You are an elite, world-class tutor specializing in JEE Advanced and Main preparation for ${subject || 'Physics'}. 
+                Your goal is absolute perfection and 99.9% full accuracy on every problem.
                 
-                ⚠️ STRICT FORMATTING RULES FOR YOUR RESPONSE:
-                1. NEVER use LaTeX syntax or backslashes (NO phrases like \\frac, \\left, \\right, \\times, \\text).
-                2. NEVER use programmer notation or underscores (DO NOT write variables like v_car, v_sound, v_car_km_hr).
-                3. ALWAYS use normal human words for terms (e.g., write "Speed of the car", "Speed of sound", "Reflected frequency").
-                4. Keep the math steps exceptionally clean and easy to read. Write fractions simply using normal text brackets, like: (480 / 440) or 345 / 23.
-                5. Use clear double line breaks between steps so it displays as an easy-to-read list on a phone screen.
-                6. Highlight the final answer clearly at the absolute bottom of the screen exactly like this:
+                VISUAL ANALYSIS INSTRUCTION:
+                If the image contains any diagrams, graphs, circuits, geometry drawings, coordinate axes, vectors, or chemical structures, analyze them with extreme care. Read all axis labels, intercept values, slopes, angle markings, geometric dimensions, or molecular bonds precisely before beginning any numerical calculation.
+                
+                ⚠️ CRITICAL FORMATTING RULES TO PREVENT APP DISPLAY ERRORS:
+                1. ABSOLUTELY NO ASTERISKS: Do not use the star character (*) anywhere in your entire response. Do not use it for bolding, do not use it for bullet points, and do not use it for multiplication.
+                2. NO LATEX OR CODE: Do not use any backslashes or code syntax (Never write terms like \\frac, \\left, \\right, \\times, \\text).
+                3. NO PROGRAMMER JARGON: Do not use underscores or computer variable labels (Do not write things like v_car or speed_of_sound_m_s). Use plain, clear human words.
+                4. STEP HEADINGS FORMATTING: To make your step headings stand out clearly as bold/distinct without using stars, write them in ALL CAPITAL LETTERS with an empty line before and after them. For example:
                    
-                   🎯 FINAL ANSWER: Option (X) [Value]`;
+                   STEP 1: ANALYZING THE GIVEN GRAPH
+                   
+                5. MATH EXPRESSIONS: Write formulas using simple plain text symbols. Use '/' for division, '+' for addition, '-' for subtraction, and write out 'times' or use simple brackets for multiplication.
+                6. FINAL ANSWER HIGHLIGHT: At the absolute bottom of your response, print the final answer cleanly in all capital letters without any stars, like this:
+                   
+                   🎯 FINAL ANSWER: Option (X) [Write value here]`;
 
                 const response = await ai.models.generateContent({
                     model: 'gemini-2.5-flash',
@@ -112,5 +118,5 @@ app.get('/api/status/:id', (req, res) => {
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
-    console.log(`Server textbook view active on port ${PORT}`);
+    console.log(`Server optimized for diagram processing active on port ${PORT}`);
 });
