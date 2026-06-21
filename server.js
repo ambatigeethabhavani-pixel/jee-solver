@@ -1,7 +1,7 @@
-const express = require('express');
-const multer = require('multer');
-const { GoogleGenAI } = require('@google/genai');
-const cors = require('cors');
+import express from 'express';
+import multer from 'multer';
+import { GoogleGenAI } from '@google/genai';
+import cors from 'cors';
 
 const app = express();
 app.use(cors());
@@ -31,7 +31,7 @@ app.post('/solve', upload.single('image'), async (req, res) => {
 
         const prompt = `You are an expert tutor specializing in JEE Advanced and Main preparation for ${subject || 'Physics'}. Solve this step-by-step with clear formulas and explanations.`;
 
-        // Generate content using the proper gemini-2.5-flash model
+        // Generate content using the gemini-2.5-flash model
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: [prompt, imagePart],
