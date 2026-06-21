@@ -1,0 +1,16 @@
+{
+  "name": "jee-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "worker": "node worker.js"
+  },
+  "dependencies": {
+    "@google/genai": "^0.1.2",
+    "bullmq": "^5.7.8",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "ioredis": "^5.4.1"
+  }
+}
