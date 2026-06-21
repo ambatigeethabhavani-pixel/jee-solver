@@ -41,17 +41,19 @@ app.post('/api/solve', async (req, res) => {
                                          .replace(/[\r\n\s]/g, "")
                                          .replace(/\\/g, "");
 
-                // Formatted prompt to force clean, plain text math explanations
+                // Powerful new prompt instructing the AI to use textbook styling 
                 const prompt = `You are an expert tutor specializing in JEE Advanced and Main preparation for ${subject || 'Physics'}. 
-                Provide a highly clear, step-by-step numerical solution for the problem in this image.
+                Provide a beautifully clear, clean, step-by-step numerical solution for the problem in this image.
                 
                 ⚠️ STRICT FORMATTING RULES FOR YOUR RESPONSE:
-                1. DO NOT use any LaTeX syntax or symbols (NEVER use words starting with backslashes like \\frac, \\left, \\right, \\times, \\text, etc.).
-                2. Write all math formulas using standard plain-text characters (e.g., use '/' for division, '*' for multiplication, '^' for powers, and simple names like v_sound or v_bus).
-                3. Break down the calculations step-by-step using simple numbers.
-                4. At the very end of your response, output a clearly highlighted final answer block like this:
+                1. NEVER use LaTeX syntax or backslashes (NO phrases like \\frac, \\left, \\right, \\times, \\text).
+                2. NEVER use programmer notation or underscores (DO NOT write variables like v_car, v_sound, v_car_km_hr).
+                3. ALWAYS use normal human words for terms (e.g., write "Speed of the car", "Speed of sound", "Reflected frequency").
+                4. Keep the math steps exceptionally clean and easy to read. Write fractions simply using normal text brackets, like: (480 / 440) or 345 / 23.
+                5. Use clear double line breaks between steps so it displays as an easy-to-read list on a phone screen.
+                6. Highlight the final answer clearly at the absolute bottom of the screen exactly like this:
                    
-                   🎯 FINAL ANSWER: Option (X) [Write the exact option value here]`;
+                   🎯 FINAL ANSWER: Option (X) [Value]`;
 
                 const response = await ai.models.generateContent({
                     model: 'gemini-2.5-flash',
@@ -110,5 +112,5 @@ app.get('/api/status/:id', (req, res) => {
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
-    console.log(`Server scrubbing and plain math output active on port ${PORT}`);
+    console.log(`Server textbook view active on port ${PORT}`);
 });
