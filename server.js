@@ -32,16 +32,26 @@ app.post('/api/solve', async (req, res) => {
         // Run the AI task asynchronously in the background
         (async () => {
             try {
-                // 1. Remove the data URL prefix if it exists
+                // Remove the data URL prefix if it exists
                 let cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, "");
 
-                // 2. Clear out hidden newlines (\n), carriage returns (\r), spaces, and accidental backslashes
+                // Clear out hidden characters, newlines, and accidental backslashes
                 cleanBase64 = cleanBase64.replace(/\\n/g, "")
                                          .replace(/\\r/g, "")
                                          .replace(/[\r\n\s]/g, "")
                                          .replace(/\\/g, "");
 
-                const prompt = `You are an expert tutor specializing in JEE Advanced and Main preparation for ${subject || 'Physics'}. Solve this step-by-step with clear formulas and explanations.`;
+                // Formatted prompt to force clean, plain text math explanations
+                const prompt = `You are an expert tutor specializing in JEE Advanced and Main preparation for ${subject || 'Physics'}. 
+                Provide a highly clear, step-by-step numerical solution for the problem in this image.
+                
+                ⚠️ STRICT FORMATTING RULES FOR YOUR RESPONSE:
+                1. DO NOT use any LaTeX syntax or symbols (NEVER use words starting with backslashes like \\frac, \\left, \\right, \\times, \\text, etc.).
+                2. Write all math formulas using standard plain-text characters (e.g., use '/' for division, '*' for multiplication, '^' for powers, and simple names like v_sound or v_bus).
+                3. Break down the calculations step-by-step using simple numbers.
+                4. At the very end of your response, output a clearly highlighted final answer block like this:
+                   
+                   🎯 FINAL ANSWER: Option (X) [Write the exact option value here]`;
 
                 const response = await ai.models.generateContent({
                     model: 'gemini-2.5-flash',
@@ -100,5 +110,5 @@ app.get('/api/status/:id', (req, res) => {
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
-    console.log(`Server scrubbing active on port ${PORT}`);
+    console.log(`Server scrubbing and plain math output active on port ${PORT}`);
 });
