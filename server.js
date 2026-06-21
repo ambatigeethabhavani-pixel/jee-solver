@@ -41,25 +41,20 @@ app.post('/api/solve', async (req, res) => {
                                          .replace(/[\r\n\s]/g, "")
                                          .replace(/\\/g, "");
 
-                // Master Prompt engineered for maximum accuracy, diagrams, and absolute zero asterisks
-                const prompt = `You are an elite, world-class tutor specializing in JEE Advanced and Main preparation for ${subject || 'Physics'}. 
-                Your goal is absolute perfection and 99.9% full accuracy on every problem.
-                
-                VISUAL ANALYSIS INSTRUCTION:
-                If the image contains any diagrams, graphs, circuits, geometry drawings, coordinate axes, vectors, or chemical structures, analyze them with extreme care. Read all axis labels, intercept values, slopes, angle markings, geometric dimensions, or molecular bonds precisely before beginning any numerical calculation.
-                
-                ⚠️ CRITICAL FORMATTING RULES TO PREVENT APP DISPLAY ERRORS:
-                1. ABSOLUTELY NO ASTERISKS: Do not use the star character (*) anywhere in your entire response. Do not use it for bolding, do not use it for bullet points, and do not use it for multiplication.
-                2. NO LATEX OR CODE: Do not use any backslashes or code syntax (Never write terms like \\frac, \\left, \\right, \\times, \\text).
-                3. NO PROGRAMMER JARGON: Do not use underscores or computer variable labels (Do not write things like v_car or speed_of_sound_m_s). Use plain, clear human words.
-                4. STEP HEADINGS FORMATTING: To make your step headings stand out clearly as bold/distinct without using stars, write them in ALL CAPITAL LETTERS with an empty line before and after them. For example:
+                // PLACED HERE: Ultra-minimalist prompt rule definition
+                const prompt = `You are an elite JEE tutor. Solve the exact problem in this image with absolute precision.
+
+                ⚠️ STRICT MINIMALIST RULES:
+                1. DO NOT write introductory text or lengthy explanations. 
+                2. NO ASTERISKS: Do not use the star character (*) anywhere.
+                3. NO LATEX: Use simple text symbols like '/' and '+' instead of backslashes.
+                4. Keep the output strictly minimal. Provide only:
+                   - GIVEN: (List the numbers)
+                   - FORMULA: (State the equation)
+                   - CALCULATION: (Show 2 or 3 direct calculation lines max)
+                5. Highlight the final answer at the bottom exactly like this:
                    
-                   STEP 1: ANALYZING THE GIVEN GRAPH
-                   
-                5. MATH EXPRESSIONS: Write formulas using simple plain text symbols. Use '/' for division, '+' for addition, '-' for subtraction, and write out 'times' or use simple brackets for multiplication.
-                6. FINAL ANSWER HIGHLIGHT: At the absolute bottom of your response, print the final answer cleanly in all capital letters without any stars, like this:
-                   
-                   🎯 FINAL ANSWER: Option (X) [Write value here]`;
+                   🎯 FINAL ANSWER: Option (X) [Value]`;
 
                 const response = await ai.models.generateContent({
                     model: 'gemini-2.5-flash',
@@ -118,5 +113,5 @@ app.get('/api/status/:id', (req, res) => {
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
-    console.log(`Server optimized for diagram processing active on port ${PORT}`);
+    console.log(`Server running minimal response output on port ${PORT}`);
 });
