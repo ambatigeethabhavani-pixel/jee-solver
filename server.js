@@ -41,53 +41,41 @@ app.post('/api/solve', async (req, res) => {
                                          .replace(/[\r\n\s]/g, "")
                                          .replace(/\\/g, "");
 
-                // PLACED HERE: Ultra-minimalist prompt rule definition
-                const prompt = `You are an elite JEE tutor. Solve the exact problem in this image with absolute precision.
-
-                ⚠️ STRICT MINIMALIST RULES:
-                1. DO NOT write introductory text or lengthy explanations. 
-                2. NO ASTERISKS: Do not use the star character (*) anywhere.
-                3. NO LATEX: Use simple text symbols like '/' and '+' instead of backslashes.
-                4. Keep the output strictly minimal. Provide only:
-                   - GIVEN: (List the numbers)
-                   - FORMULA: (State the equation)
-                   - CALCULATION: (Show 2 or 3 direct calculation lines max)
-                5. Highlight the final answer at the bottom exactly like this:
-                   
-                   🎯 FINAL ANSWER: Option (X) [Value]`;
-
                 const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash-lite',
-            contents: [
-                "You are an expert JEE Professor. Solve this question with absolute accuracy.\n\n" +
-                "CRITICAL INSTRUCTIONS:\n" +
-                "1. First, carefully identify the given values and what needs to be found.\n" +
-                "2. Write out the core formula/theorem required.\n" +
-                "3. Solve the math step-by-step. Do not skip calculations.\n" +
-                "4. VERIFICATION: Before finalizing your answer, recalculate the steps hidden from the user to verify there are no algebraic or sign errors.",
-                {
-                    inlineData: {
-                        data: imageBuffer.toString("base64"),
-                        mimeType: "image/jpeg"
-                    }
-                }
-            ],
-        });
-// Save the successful solution to your jobs object
-        jobs.set(jobId, {
-            id: jobId,
-            status: "completed",
-            result: { solution: response.text }
-        });
+                    model: 'gemini-2.5-flash-lite',
+                    contents: [
+                        "You are an expert JEE Professor. Solve this question with absolute accuracy.\n\n" +
+                        "CRITICAL INSTRUCTIONS:\n" +
+                        "1. First, carefully identify the given values and what needs to be found.\n" +
+                        "2. Write out the core formula/theorem required.\n" +
+                        "3. Solve the math step-by-step. Do not skip calculations or short-circuit calculations.\n" +
+                        "4. VERIFICATION: Before finalizing your answer, recalculate the steps hidden from the user to verify there are no algebraic or sign errors. Show your fully detailed calculation chain clearly.",
+                        {
+                            inlineData: {
+                                data: cleanBase64,
+                                mimeType: "image/jpeg"
+                            }
+                        }
+                    ],
+                });
 
-    } catch (aiError) {
-        console.error("Gemini Error:", aiError);
-        jobs.set(jobId, {
-            id: jobId,
-            status: "completed",
-            result: { solution: `⚠️ API Error: ${aiError.message}` }
-        });
-    }
+                // Save the successful solution to your jobs object
+                jobs.set(jobId, {
+                    id: jobId,
+                    status: "completed",
+                    result: { solution: response.text }
+                });
+
+            } catch (aiError) {
+                console.error("Gemini Error:", aiError);
+                jobs.set(jobId, {
+                    id: jobId,
+                    status: "completed",
+                    result: { solution: `⚠️ API Error: ${aiError.message}` }
+                });
+            }
+        })(); // <--- Fixed: Properly closed out the background function block here
+
     } catch (error) {
         console.error("Server Error:", error);
         res.status(500).json({ jobId: "", status: "failed" });
