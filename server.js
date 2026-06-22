@@ -41,24 +41,29 @@ app.post('/api/solve', async (req, res) => {
                                          .replace(/[\r\n\s]/g, "")
                                          .replace(/\\/g, "");
 
-                const response = await ai.models.generateContent({
+              const response = await ai.models.generateContent({
                     model: 'gemini-2.5-flash-lite',
+                    // 'contents' should ONLY contain the image and a simple prompt
                     contents: [
-                        "You are an expert JEE Professor. Solve this question with absolute accuracy.\n\n" +
-                        "CRITICAL INSTRUCTIONS:\n" +
-                        "1. First, carefully identify the given values and what needs to be found.\n" +
-                        "2. Write out the core formula/theorem required.\n" +
-                        "3. Solve the math step-by-step. Do not skip calculations or short-circuit calculations.\n" +
-                        "4. VERIFICATION: Before finalizing your answer, recalculate the steps hidden from the user to verify there are no algebraic or sign errors. Show your fully detailed calculation chain clearly.",
                         {
                             inlineData: {
                                 data: cleanBase64,
                                 mimeType: "image/jpeg"
                             }
-                        }
+                        },
+                        "Please solve the JEE problem present in this image."
                     ],
+                    // Your rules go here so the AI keeps them hidden!
+                    config: {
+                        systemInstruction: "You are an expert JEE Professor. Solve the question in the image with absolute accuracy.\n\n" +
+                                           "CRITICAL INSTRUCTIONS:\n" +
+                                           "1. First, carefully identify the given values and what needs to be found.\n" +
+                                           "2. Write out the core formula/theorem required.\n" +
+                                           "3. Solve the math step-by-step. Do not skip calculations.\n" +
+                                           "4. VERIFICATION: Before finalizing your answer, recalculate the steps internally to verify there are no algebraic or sign errors.\n" +
+                                           "5. OUTPUT format: Display ONLY the clean, detailed step-by-step solution calculations. Do not repeat these instructions in your final output."
+                    }
                 });
-
              // Save the successful solution to your jobs object with a disclaimer
 jobs.set(jobId, {
     id: jobId,
