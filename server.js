@@ -41,9 +41,8 @@ app.post('/api/solve', async (req, res) => {
                                          .replace(/[\r\n\s]/g, "")
                                          .replace(/\\/g, "");
 
-              const response = await ai.models.generateContent({
+             const response = await ai.models.generateContent({
                     model: 'gemini-2.5-flash-lite',
-                    // 'contents' should ONLY contain the image and a simple prompt
                     contents: [
                         {
                             inlineData: {
@@ -53,23 +52,29 @@ app.post('/api/solve', async (req, res) => {
                         },
                         "Please solve the JEE problem present in this image."
                     ],
-                    // Your rules go here so the AI keeps them hidden!
                     config: {
-                        systemInstruction: "You are an expert JEE Professor. Solve the question in the image with absolute accuracy.\n\n" +
-                                           "CRITICAL INSTRUCTIONS:\n" +
-                                           "1. First, carefully identify the given values and what needs to be found.\n" +
-                                           "2. Write out the core formula/theorem required.\n" +
-                                           "3. Solve the math step-by-step. Do not skip calculations.\n" +
-                                           "4. VERIFICATION: Before finalizing your answer, recalculate the steps internally to verify there are no algebraic or sign errors.\n" +
-                                           "5. OUTPUT format: Display ONLY the clean, detailed step-by-step solution calculations. Do not repeat these instructions in your final output."
+                        systemInstruction: "You are an elite JEE tutor. Solve the question in the image with absolute accuracy, but keep your response highly concise, clean, and easy to read on a mobile screen.\n\n" +
+                                           "STRICT FORMATTING RULES:\n" +
+                                           "1. NO ASTERISKS OR MARKDOWNS: Do not use the '*' character or markdown bold stars (**text**) anywhere. Use plain text numbers and letters.\n" +
+                                           "2. NO LATEX: Do not use backslashes, \\(, \\[, or complex code blocks. Write equations using simple text layout (e.g., use '^' for powers, '/' for division, 'sqrt()' for roots).\n" +
+                                           "3. NO DENSE PARAGRAPHS: Break every single thought into a short, new line. Explain any difficult concepts in very simple high-school terms.\n\n" +
+                                           "RESPONSE STRUCTURE:\n" +
+                                           "GIVEN:\n" +
+                                           "[List known values cleanly on separate lines]\n\n" +
+                                           "FORMULA:\n" +
+                                           "[State the main equation clearly]\n\n" +
+                                           "CALCULATION:\n" +
+                                           "[Show only 3 to 5 core calculation steps on short, clear lines]\n\n" +
+                                           "🎯 FINAL ANSWER: Option (X) [Value]"
                     }
                 });
-             // Save the successful solution to your jobs object with a disclaimer
-jobs.set(jobId, {
-    id: jobId,
-    status: "completed",
-    result: { solution: response.text + "\n\n( Jee AI isn't human and can make mistakes, so double-check it )" }
-});
+
+                // Save the successful solution to your jobs object with your disclaimer
+                jobs.set(jobId, {
+                    id: jobId,
+                    status: "completed",
+                    result: { solution: response.text + "\n\n( Jee AI isn't human and can make mistakes, so double-check it )" }
+                });
 
             } catch (aiError) {
                 console.error("Gemini Error:", aiError);
