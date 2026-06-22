@@ -57,34 +57,37 @@ app.post('/api/solve', async (req, res) => {
                    🎯 FINAL ANSWER: Option (X) [Value]`;
 
                 const response = await ai.models.generateContent({
-                    model: 'gemini-2.5-flash-lite',
-                    contents: [
-                        prompt,
-                        {
-                            inlineData: {
-                                mimeType: 'image/jpeg',
-                                data: cleanBase64
-                            }
-                        }
-                    ],
-                });
+            model: 'gemini-2.5-flash-lite',
+            contents: [
+                "You are an expert JEE Professor. Solve this question with absolute accuracy.\n\n" +
+                "CRITICAL INSTRUCTIONS:\n" +
+                "1. First, carefully identify the given values and what needs to be found.\n" +
+                "2. Write out the core formula/theorem required.\n" +
+                "3. Solve the math step-by-step. Do not skip calculations.\n" +
+                "4. VERIFICATION: Before finalizing your answer, recalculate the steps hidden from the user to verify there are no algebraic or sign errors.",
+                {
+                    inlineData: {
+                        data: imageBuffer.toString("base64"),
+                        mimeType: "image/jpeg"
+                    }
+                }
+            ],
+        });
+// Save the successful solution to your jobs object
+        jobs.set(jobId, {
+            id: jobId,
+            status: "completed",
+            result: { solution: response.text }
+        });
 
-                jobs.set(jobId, {
-                    id: jobId,
-                    status: "completed",
-                    result: { solution: response.text }
-                });
-
-            } catch (aiError) {
-                console.error("Gemini Error:", aiError);
-                jobs.set(jobId, {
-                    id: jobId,
-                    status: "completed",
-                    result: { solution: `⚠️ API Error: ${aiError.message}` }
-                });
-            }
-        })();
-
+    } catch (aiError) {
+        console.error("Gemini Error:", aiError);
+        jobs.set(jobId, {
+            id: jobId,
+            status: "completed",
+            result: { solution: `⚠️ API Error: ${aiError.message}` }
+        });
+    }
     } catch (error) {
         console.error("Server Error:", error);
         res.status(500).json({ jobId: "", status: "failed" });
