@@ -59,12 +59,12 @@ app.post('/api/solve', async (req, res) => {
                     ],
                 });
 
-                // Save the successful solution to your jobs object
-                jobs.set(jobId, {
-                    id: jobId,
-                    status: "completed",
-                    result: { solution: response.text }
-                });
+             // Save the successful solution to your jobs object with a disclaimer
+jobs.set(jobId, {
+    id: jobId,
+    status: "completed",
+    result: { solution: response.text + "\n\n( Jee AI isn't human and can make mistakes, so double-check it )" }
+});
 
             } catch (aiError) {
                 console.error("Gemini Error:", aiError);
